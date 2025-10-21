@@ -22,7 +22,7 @@ if "categorias" not in st.session_state:
         "Jabon de Trastes": ["Salvo", "Axion"], 
         "Automotriz": ["Shampoo Auto", "Almoroll", "Abrillantador", "Cera", "Glicerina"], 
         "Aroma Auto": [ "Hugo Boss", "Adidas", "360", "Estefano", "Lacoste","Tommy", "Vainilla", "Selena", "Ferrary"], 
-        "Desengrasantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"], 
+        "Desengrazantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"], 
         "Shampoo Cabello": ["Head and Shoulder", "Shampoo para mascota", "Pantene", "Dove"], 
         "Detercom": ["Detercom", "Detercom Aroma"], 
         "Varios": ["Insecticida", "Windex", "Vestiduras", "Quita Gota","Aceite Muebles", "Plancha Facil", "Repelente", "Creolina"], 
@@ -146,5 +146,4 @@ if accion == "Registrar venta":
             with open(ruta_archivo, "rb") as file:
                 st.download_button(
                     label="⬇️ Descargar registro del día",
-                    data=file,
-                    file
+
