@@ -1,4 +1,4 @@
-import streamlit as st
+                                      import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
@@ -73,7 +73,7 @@ def eliminar_elementos():
             st.session_state.categorias[cat].remove(prod)
             st.success(f"✅ Producto '{prod}' eliminado de '{cat}'.")
 
-# --- Función para eliminar registro por número visible ---
+# --- Función para eliminar registro por índice visible ---
 def eliminar_registro_por_indice():
     if os.path.exists(ruta_archivo):
         df = pd.read_csv(ruta_archivo)
@@ -87,7 +87,6 @@ def eliminar_registro_por_indice():
             df = df.drop(index=idx).reset_index(drop=True)
             df.to_csv(ruta_archivo, index=False)
             st.success(f"✅ Venta número {idx} eliminada correctamente.")
-            st.experimental_rerun()
     else:
         st.info("No hay registros de ventas para hoy.")
 
