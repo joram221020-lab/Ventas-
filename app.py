@@ -22,7 +22,7 @@ if "categorias" not in st.session_state:
         "Jabon de Trastes": ["Salvo", "Axion"], 
         "Automotriz": ["Shampoo Auto", "Almoroll", "Abrillantador", "Cera", "Glicerina"], 
         "Aroma Auto": [ "Hugo Boss", "Adidas", "360", "Estefano", "Lacoste","Tommy", "Vainilla", "Selena", "Ferrary"], 
-        "Desengrasantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"], 
+        "Desengrazantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"], 
         "Shampoo Cabello": ["Head and Shoulder", "Shampoo para mascota", "Pantene", "Dove"], 
         "Detercom": ["Detercom", "Detercom Aroma"], 
         "Varios": ["Insecticida", "Windex", "Vestiduras", "Quita Gota","Aceite Muebles", "Plancha Facil", "Repelente", "Creolina"], 
@@ -124,7 +124,12 @@ if accion == "Registrar venta":
 
             if "ingresando_cantidad" in st.session_state and st.session_state.ingresando_cantidad:
                 prod = st.session_state.producto_seleccionado
-                cantidad = st.number_input(f"Ingresa cantidad vendida de {prod}:", min_value=1, step=1)
+                cantidad = st.number_input(
+                    f"Ingresa cantidad vendida de {prod}:",
+                    min_value=0.000000001,
+                    step=0.000000001,
+                    format="%.9f"
+                )
                 if st.button("Registrar venta", key="registrar"):
                     guardar_venta(usuario, categoria, prod, cantidad)
                     st.session_state.ingresando_cantidad = False
