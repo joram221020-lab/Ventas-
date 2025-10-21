@@ -22,7 +22,7 @@ if "categorias" not in st.session_state:
         "Jabon de Trastes": ["Salvo", "Axion"], 
         "Automotriz": ["Shampoo Auto", "Almoroll", "Abrillantador", "Cera", "Glicerina"], 
         "Aroma Auto": [ "Hugo Boss", "Adidas", "360", "Estefano", "Lacoste","Tommy", "Vainilla", "Selena", "Ferrary"], 
-        "Desengrazantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"], 
+        "Desengrasantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"], 
         "Shampoo Cabello": ["Head and Shoulder", "Shampoo para mascota", "Pantene", "Dove"], 
         "Detercom": ["Detercom", "Detercom Aroma"], 
         "Varios": ["Insecticida", "Windex", "Vestiduras", "Quita Gota","Aceite Muebles", "Plancha Facil", "Repelente", "Creolina"], 
@@ -73,22 +73,21 @@ def eliminar_elementos():
             st.session_state.categorias[cat].remove(prod)
             st.success(f"✅ Producto '{prod}' eliminado de '{cat}'.")
 
-# --- Función para eliminar registro por botón ---
-def eliminar_registro_por_boton():
+# --- Función para eliminar registro por número visible ---
+def eliminar_registro_por_indice():
     if os.path.exists(ruta_archivo):
         df = pd.read_csv(ruta_archivo)
-        st.subheader("🗑️ Eliminar ventas registradas hoy")
+        st.subheader("🗑️ Eliminar registro de venta por número")
 
-        for i, row in df.iterrows():
-            col1, col2 = st.columns([5, 1])
-            with col1:
-                st.write(f"**{i}** | {row['Fecha']} {row['Hora']} | {row['Usuario']} | {row['Categoría']} | {row['Producto']} | Cantidad: {row['Cantidad']}")
-            with col2:
-                if st.button("🗑️ Eliminar", key=f"del_{i}"):
-                    df = df.drop(index=i).reset_index(drop=True)
-                    df.to_csv(ruta_archivo, index=False)
-                    st.success(f"✅ Venta eliminada correctamente.")
-                    st.experimental_rerun()
+        df_con_indice = df.reset_index(drop=False)
+        st.dataframe(df_con_indice)
+
+        idx = st.number_input("Número de venta a eliminar:", min_value=0, max_value=len(df_con_indice)-1, step=1)
+        if st.button("Eliminar venta seleccionada"):
+            df = df.drop(index=idx).reset_index(drop=True)
+            df.to_csv(ruta_archivo, index=False)
+            st.success(f"✅ Venta número {idx} eliminada correctamente.")
+            st.experimental_rerun()
     else:
         st.info("No hay registros de ventas para hoy.")
 
@@ -146,4 +145,13 @@ if accion == "Registrar venta":
             with open(ruta_archivo, "rb") as file:
                 st.download_button(
                     label="⬇️ Descargar registro del día",
+                    data=file,
+                    file_name=nombre_archivo,
+                    mime="text/csv"
+                )
 
+elif accion == "Eliminar categoría o producto":
+    eliminar_elementos()
+
+elif accion == "Eliminar registro de venta":
+    eliminar_registro_por_indice()
