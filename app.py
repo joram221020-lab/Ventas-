@@ -12,7 +12,9 @@ st.write("Selecciona una categoría, elige el producto vendido y registra la can
 # --- Inicialización de datos ---
 if "categorias" not in st.session_state:
     st.session_state.categorias = {
-        "Cloro": ["Cloro"]
+        "Bebidas": ["Agua", "Refresco", "Cerveza"],
+        "Snacks": ["Papas", "Galletas", "Chocolate"],
+        "Limpieza": ["Jabón", "Cloro", "Suavitel"]
     }
 
 # --- Ruta del archivo CSV ---
@@ -118,4 +120,20 @@ if accion == "Registrar venta":
             df_ventas = pd.read_csv(ruta_archivo)
             st.dataframe(df_ventas)
 
-            st.subheader("📊 Vent
+            st.subheader("📊 Ventas por usuario")
+            st.dataframe(df_ventas.groupby("Usuario")["Cantidad"].sum().reset_index())
+
+            # --- Descarga CSV ---
+            with open(ruta_archivo, "rb") as file:
+                st.download_button(
+                    label="⬇️ Descargar registro del día",
+                    data=file,
+                    file_name=nombre_archivo,
+                    mime="text/csv"
+                )
+
+elif accion == "Agregar categoría":
+    agregar_categoria()
+
+elif accion == "Eliminar categoría o producto":
+    eliminar_elementos()
