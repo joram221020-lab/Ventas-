@@ -33,7 +33,6 @@ if "categorias" not in st.session_state:
 zona_mexico = pytz.timezone("America/Mexico_City")
 fecha_hora_actual = datetime.now(zona_mexico)
 fecha_actual = fecha_hora_actual.strftime("%Y-%m-%d")
-hora_actual = fecha_hora_actual.strftime("%H:%M:%S")
 nombre_archivo = f"ventas_{fecha_actual}.csv"
 ruta_archivo = os.path.join(os.getcwd(), nombre_archivo)
 
@@ -127,11 +126,9 @@ if accion == "Registrar venta":
                 cantidad = st.number_input(f"Ingresa cantidad vendida de {prod}:", min_value=1, step=1)
                 if st.button("Registrar venta", key="registrar"):
                     guardar_venta(usuario, categoria, prod, cantidad)
-                    st.session_state.mostrando_productos = False
                     st.session_state.ingresando_cantidad = False
                     st.session_state.producto_seleccionado = None
-                    st.session_state.categoria_seleccionada = None
-                    st.success("✅ Venta registrada correctamente. Puedes continuar con otra venta.")
+                    st.success("✅ Venta registrada correctamente. Puedes registrar otro producto en la misma categoría.")
 
         # --- Visualización de ventas ---
         if os.path.exists(ruta_archivo):
@@ -156,4 +153,3 @@ elif accion == "Eliminar categoría o producto":
 
 elif accion == "Eliminar registro de venta":
     eliminar_registro_venta()
-
