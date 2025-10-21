@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
+import pytz
 
 st.set_page_config(page_title="Registro de Ventas", layout="wide")
 
@@ -12,32 +13,38 @@ st.write("Selecciona una categoría, elige el producto vendido y registra la can
 # --- Inicialización de datos ---
 if "categorias" not in st.session_state:
     st.session_state.categorias = {
-        "Suavitel": ["Downy","Amanecer","Momentos Magicos","Ensueño","Primavera","Aventura Floral","Abrazo de Amor","Bebe"],
-        "Cloro": ["Cloro"],
-        "Detergentes": ["Ariel", "Mas Color", "Mas Negro", "Vel Rosita", "Vanish", "Zote", "Persil", "Ace Oxi", "Roma", "Mas Blancura", "Cloro para Mascota"],
+        "Suavitel": ["Downy","Amanecer","Momentos Magicos","Ensueño","Primavera","Aventura Floral","Abrazo de Amor","Bebe"], 
+        "Cloro": ["Cloro"], 
+        "Detergentes": ["Ariel", "Mas Color", "Mas Negro", "Vel Rosita", "Vanish", "Zote", "Persil", "Ace Oxi", "Roma", "Mas Blancura", "Cloro para Mascota"], 
         "Pino Lechoso": ["Pino Lechoso", "Pino Lechoso Verde"], 
-        "Fabuloso": ["Pepino Melon", "Frutas", "Poet Primavera", "Mar Fresco", "Poet Algodon", "Lavanda", "Maestro Limpio", "Mandarina", "Estefano", "Limon", "Durazno", "Cereza", "Manzana", "Uva", "Menta"],
-        "Jabon de Manos": ["Mora Azul", "Manzana", "Uva", "Cereza", "Durazno", "Pepino Melon", "Frutas", "Coco"],
-        "Jabon de Trastes": ["Salvo", "Axion"],
-        "Automotriz": ["Shampoo Auto", "Almoroll", "Abrillantador", "Cera", "Glicerina"],
-        "Aroma Auto": [ "Hugo Boss", "Adidas", "360", "Estefano", "Lacoste","Tommy", "Vainilla", "Selena", "Ferrary"],
-        "Desengrazantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"],
-        "Shampoo Cabello": ["Head and Shoulder", "Shampoo para mascota", "Pantene", "Dove"],
-        "Detercom": ["Detercom", "Detercom Aroma"],
-        "Varios": ["Insecticida", "Windex", "Vestiduras", "Quita Gota","Aceite Muebles", "Plancha Facil", "Repelente", "Creolina"],
+        "Fabuloso": ["Pepino Melon", "Frutas", "Poet Primavera", "Mar Fresco", "Poet Algodon", "Lavanda", "Maestro Limpio", "Mandarina", "Estefano", "Limon", "Durazno", "Cereza", "Manzana", "Uva", "Menta"], 
+        "Jabon de Manos": ["Mora Azul", "Manzana", "Uva", "Cereza", "Durazno", "Pepino Melon", "Frutas", "Coco"], 
+        "Jabon de Trastes": ["Salvo", "Axion"], 
+        "Automotriz": ["Shampoo Auto", "Almoroll", "Abrillantador", "Cera", "Glicerina"], 
+        "Aroma Auto": [ "Hugo Boss", "Adidas", "360", "Estefano", "Lacoste","Tommy", "Vainilla", "Selena", "Ferrary"], 
+        "Desengrazantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"], 
+        "Shampoo Cabello": ["Head and Shoulder", "Shampoo para mascota", "Pantene", "Dove"], 
+        "Detercom": ["Detercom", "Detercom Aroma"], 
+        "Varios": ["Insecticida", "Windex", "Vestiduras", "Quita Gota","Aceite Muebles", "Plancha Facil", "Repelente", "Creolina"], 
         "Escencia pura Auto": ["360 Red", "Vainilla", "Adiddas", "Carolina", "Nautica", "Ferrary"]
-        
     }
 
-# --- Ruta del archivo CSV ---
-fecha_actual = datetime.now().strftime("%Y-%m-%d")
+# --- Zona horaria de Ciudad de México ---
+zona_mexico = pytz.timezone("America/Mexico_City")
+fecha_hora_actual = datetime.now(zona_mexico)
+fecha_actual = fecha_hora_actual.strftime("%Y-%m-%d")
+hora_actual = fecha_hora_actual.strftime("%H:%M:%S")
 nombre_archivo = f"ventas_{fecha_actual}.csv"
 ruta_archivo = os.path.join(os.getcwd(), nombre_archivo)
 
 # --- Función para guardar ventas ---
 def guardar_venta(usuario, categoria, producto, cantidad):
+    fecha_hora_actual = datetime.now(zona_mexico)
+    fecha_actual = fecha_hora_actual.strftime("%Y-%m-%d")
+    hora_actual = fecha_hora_actual.strftime("%H:%M:%S")
     nueva_venta = pd.DataFrame([{
         "Fecha": fecha_actual,
+        "Hora": hora_actual,
         "Usuario": usuario,
         "Categoría": categoria,
         "Producto": producto,
@@ -49,28 +56,7 @@ def guardar_venta(usuario, categoria, producto, cantidad):
     else:
         df_final = nueva_venta
     df_final.to_csv(ruta_archivo, index=False)
-    st.success(f"✅ Venta registrada: {cantidad} de '{producto}' ({categoria}) por {usuario}")
-
-# --- Función para agregar nueva categoría o productos ---
-def agregar_categoria():
-    with st.form("nueva_cat"):
-        nueva_cat = st.text_input("Nombre de nueva categoría")
-        nuevo_prod = st.text_input("Productos separados por coma (opcional)")
-        agregar = st.form_submit_button("Agregar")
-        if agregar and nueva_cat:
-            productos = [p.strip() for p in nuevo_prod.split(",") if p.strip()]
-            if nueva_cat in st.session_state.categorias:
-                st.warning(f"⚠️ La categoría '{nueva_cat}' ya existe.")
-                opcion = st.radio("¿Qué deseas hacer con los productos?", ["Agregar a los existentes", "Sobrescribir los existentes"])
-                if opcion == "Agregar a los existentes":
-                    st.session_state.categorias[nueva_cat].extend(productos)
-                    st.success(f"✅ Se agregaron productos a la categoría '{nueva_cat}'.")
-                elif opcion == "Sobrescribir los existentes":
-                    st.session_state.categorias[nueva_cat] = productos
-                    st.success(f"✅ Productos actualizados en la categoría '{nueva_cat}'.")
-            else:
-                st.session_state.categorias[nueva_cat] = productos
-                st.success(f"✅ Categoría '{nueva_cat}' agregada con éxito.")
+    st.success(f"✅ Venta registrada: {cantidad} de '{producto}' ({categoria}) por {usuario} a las {hora_actual}")
 
 # --- Función para eliminar categoría o producto ---
 def eliminar_elementos():
@@ -88,9 +74,25 @@ def eliminar_elementos():
             st.session_state.categorias[cat].remove(prod)
             st.success(f"✅ Producto '{prod}' eliminado de '{cat}'.")
 
+# --- Función para eliminar registro de venta ---
+def eliminar_registro_venta():
+    if os.path.exists(ruta_archivo):
+        df = pd.read_csv(ruta_archivo)
+        st.subheader("🗑️ Eliminar registro de venta")
+        st.write("Selecciona el índice del registro que deseas eliminar:")
+        df_con_indice = df.reset_index()
+        st.dataframe(df_con_indice)
+        idx = st.number_input("Índice a eliminar:", min_value=0, max_value=len(df)-1, step=1)
+        if st.button("Eliminar registro"):
+            df = df.drop(index=idx).reset_index(drop=True)
+            df.to_csv(ruta_archivo, index=False)
+            st.success(f"✅ Registro con índice {idx} eliminado correctamente.")
+    else:
+        st.info("No hay registros de ventas para hoy.")
+
 # --- Panel lateral ---
 st.sidebar.header("⚙️ Opciones")
-accion = st.sidebar.radio("Selecciona una acción:", ["Registrar venta", "Agregar categoría", "Eliminar categoría o producto"])
+accion = st.sidebar.radio("Selecciona una acción:", ["Registrar venta", "Eliminar categoría o producto", "Eliminar registro de venta"])
 
 # --- Vista principal ---
 if accion == "Registrar venta":
@@ -149,9 +151,9 @@ if accion == "Registrar venta":
                     mime="text/csv"
                 )
 
-elif accion == "Agregar categoría":
-    agregar_categoria()
-
 elif accion == "Eliminar categoría o producto":
     eliminar_elementos()
+
+elif accion == "Eliminar registro de venta":
+    eliminar_registro_venta()
 
