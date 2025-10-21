@@ -1,75 +1,162 @@
-
 import streamlit as st
 import pandas as pd
+import os
 from datetime import datetime
 
-st.set_page_config(page_title="Punto de Venta", layout="wide")
+# ==============================
+# CONFIGURACIÓN INICIAL
+# ==============================
+st.set_page_config(page_title="Punto de Venta", page_icon="🧾", layout="wide")
 
-# ---------- Función para cargar datos ----------
-@st.cache_data
-def cargar_datos():
-    try:
-        return pd.read_csv("productos.csv")
-    except FileNotFoundError:
-        return pd.DataFrame(columns=["Categoría", "Producto"])
+# ==============================
+# FUNCIONES AUXILIARES
+# ==============================
+def obtener_nombre_archivo():
+    """Genera el nombre del archivo CSV según la fecha actual."""
+    fecha = datetime.now().strftime("%Y-%m-%d")
+    return f"ventas_{fecha}.csv"
 
-productos_df = cargar_datos()
+PRODUCTOS_FILE = "productos.csv"
 
-# ---------- Interfaz ----------
-st.title("🛍️ Registro de Ventas del Punto de Venta")
+# ==============================
+# ARCHIVO DE PRODUCTOS
+# ==============================
+if not os.path.exists(PRODUCTOS_FILE):
+    df_prod = pd.DataFrame({
+        "Categoría": ["Cloro"],
+        "Producto": ["Cloro"]
+    })
+    df_prod.to_csv(PRODUCTOS_FILE, index=False)
 
-st.markdown("Selecciona una **categoría**, luego un **producto** y registra la cantidad vendida.")
+productos = pd.read_csv(PRODUCTOS_FILE)
 
-categorias = productos_df["Categoría"].unique()
+# ==============================
+# ESTILO PERSONALIZADO
+# ==============================
+st.markdown("""
+    <style>
+        body {
+            background-color: #f0fff4;
+        }
+        .stButton>button {
+            background-color: #38a169;
+            color: white;
+            border-radius: 10px;
+            height: 3em;
+            width: 100%;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .stButton>button:hover {
+            background-color: #2f855a;
+            transform: scale(1.02);
+        }
+        .categoria {
+            padding: 15px;
+            border-radius: 12px;
+            background-color: #c6f6d5;
+            text-align: center;
+            font-weight: bold;
+            color: #22543d;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-# Mostrar categorías como botones
-st.subheader("📂 Categorías disponibles:")
+# ==============================
+# TÍTULO PRINCIPAL
+# ==============================
+st.title("💚 Registro de Ventas del Punto de Venta")
+st.markdown("Selecciona una **categoría**, luego un **producto**, indica la cantidad y registra la venta.")
+
+# ==============================
+# SECCIÓN DE CATEGORÍAS
+# ==============================
+categorias = sorted(productos["Categoría"].unique())
+st.subheader("🧺 Categorías disponibles")
+
 cols = st.columns(4)
-categoria_seleccionada = None
+cat_elegida = st.session_state.get("categoria", None)
+
 for i, cat in enumerate(categorias):
     if cols[i % 4].button(cat):
-        categoria_seleccionada = cat
+        st.session_state.categoria = cat
+        cat_elegida = cat
 
-if categoria_seleccionada:
-    st.subheader(f"🛒 Productos de la categoría: {categoria_seleccionada}")
-    productos_cat = productos_df[productos_df["Categoría"] == categoria_seleccionada]["Producto"].tolist()
+# ==============================
+# SECCIÓN DE PRODUCTOS
+# ==============================
+if cat_elegida:
+    st.markdown(f"### 🛒 Productos de la categoría: **{cat_elegida}**")
 
-    cols_prod = st.columns(4)
-    producto_seleccionado = None
-    for i, prod in enumerate(productos_cat):
-        if cols_prod[i % 4].button(prod):
-            producto_seleccionado = prod
+    prods = productos[productos["Categoría"] == cat_elegida]["Producto"].tolist()
+    cols2 = st.columns(4)
+    prod_sel = st.session_state.get("producto", None)
 
-    if producto_seleccionado:
-        cantidad = st.number_input("Cantidad vendida:", min_value=1, step=1, key="cantidad_venta")
+    for i, prod in enumerate(prods):
+        if cols2[i % 4].button(prod):
+            st.session_state.producto = prod
+            prod_sel = prod
+
+    if prod_sel:
+        st.success(f"Seleccionado: **{prod_sel}** de la categoría **{cat_elegida}**")
+        cantidad = st.number_input("Cantidad vendida:", min_value=1, step=1, key="cantidad_input")
+
         if st.button("✅ Registrar venta"):
-            fecha = datetime.now().strftime("%Y-%m-%d")
-            archivo = f"ventas_{fecha}.csv"
-            venta = pd.DataFrame([[fecha, categoria_seleccionada, producto_seleccionado, cantidad]],
-                                 columns=["Fecha", "Categoría", "Producto", "Cantidad"])
-            try:
-                df_existente = pd.read_csv(archivo)
-                df_actualizado = pd.concat([df_existente, venta], ignore_index=True)
-            except FileNotFoundError:
-                df_actualizado = venta
-            df_actualizado.to_csv(archivo, index=False)
-            st.success(f"✅ Venta registrada: {producto_seleccionado} ({cantidad} unidades)")
+            archivo = obtener_nombre_archivo()
+            nueva_venta = pd.DataFrame({
+                "Fecha": [datetime.now().strftime("%Y-%m-%d")],
+                "Hora": [datetime.now().strftime("%H:%M:%S")],
+                "Categoría": [cat_elegida],
+                "Producto": [prod_sel],
+                "Cantidad": [cantidad]
+            })
 
-# ---------- Agregar nueva categoría o producto ----------
+            if os.path.exists(archivo):
+                ventas = pd.read_csv(archivo)
+                ventas = pd.concat([ventas, nueva_venta], ignore_index=True)
+            else:
+                ventas = nueva_venta
+
+            ventas.to_csv(archivo, index=False)
+            st.success(f"✅ Venta registrada: {cantidad} unidades de {prod_sel}.")
+            st.balloons()
+
+# ==============================
+# SECCIÓN PARA AGREGAR PRODUCTOS
+# ==============================
 st.markdown("---")
-st.subheader("➕ Agregar nueva categoría o producto")
+st.header("➕ Agregar nueva categoría o producto")
 
-col1, col2 = st.columns(2)
-with col1:
+with st.form("agregar_form"):
     nueva_categoria = st.text_input("Nueva categoría (o existente):")
-with col2:
     nuevo_producto = st.text_input("Nuevo producto:")
+    agregar = st.form_submit_button("Agregar")
 
-if st.button("Agregar"):
-    if nueva_categoria and nuevo_producto:
-        nuevo_registro = pd.DataFrame([[nueva_categoria, nuevo_producto]], columns=["Categoría", "Producto"])
-        productos_actualizado = pd.concat([productos_df, nuevo_registro], ignore_index=True)
-        productos_actualizado.to_csv("productos.csv", index=False)
-        st.success(f"✅ Se agregó el producto '{nuevo_producto}' a la categoría '{nueva_categoria}'.")
-    else:
-        st.warning("Por favor, completa ambos campos antes de agregar.")
+    if agregar:
+        if nueva_categoria and nuevo_producto:
+            nuevo = pd.DataFrame({"Categoría": [nueva_categoria], "Producto": [nuevo_producto]})
+            productos = pd.concat([productos, nuevo], ignore_index=True)
+            productos.to_csv(PRODUCTOS_FILE, index=False)
+            st.success(f"✅ Producto '{nuevo_producto}' agregado en la categoría '{nueva_categoria}'.")
+        else:
+            st.error("❌ Debes escribir una categoría y un producto.")
+
+# ==============================
+# DESCARGA DEL CSV DEL DÍA
+# ==============================
+st.markdown("---")
+archivo_actual = obtener_nombre_archivo()
+st.subheader("📦 Descargar registro del día")
+if os.path.exists(archivo_actual):
+    with open(archivo_actual, "rb") as f:
+        st.download_button(
+            label="⬇️ Descargar ventas del día (CSV)",
+            data=f,
+            file_name=archivo_actual,
+            mime="text/csv"
+        )
+else:
+    st.info("Aún no se han registrado ventas hoy.")
+
