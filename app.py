@@ -13,6 +13,7 @@ st.write("Selecciona una categoría, elige el producto vendido y registra la can
 if "categorias" not in st.session_state:
     st.session_state.categorias = {
         "Suavitel": ["Downy","Amanecer","Momentos Magicos","Ensueño","Primavera","Aventura Floral","Abrazo de Amor","Bebe"],
+        "Cloro": ["Cloro"],
         "Detergentes": ["Ariel", "Mas Color", "Mas Negro", "Vel Rosita", "Vanish", "Zote", "Persil", "Ace Oxi", "Roma", "Mas Blancura", "Cloro para Mascota"],
         "Pino Lechoso": ["Pino Lechoso", "Pino Lechoso Verde"], 
         "Fabuloso": ["Pepino Melon", "Frutas", "Poet Primavera", "Mar Fresco", "Poet Algodon", "Lavanda", "Maestro Limpio", "Mandarina", "Estefano", "Limon", "Durazno", "Cereza", "Manzana", "Uva", "Menta"],
