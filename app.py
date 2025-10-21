@@ -112,7 +112,9 @@ if accion == "Registrar venta":
                     guardar_venta(usuario, categoria, prod, cantidad)
                     st.session_state.mostrando_productos = False
                     st.session_state.ingresando_cantidad = False
-                    st.experimental_rerun()
+                    st.session_state.producto_seleccionado = None
+                    st.session_state.categoria_seleccionada = None
+                    st.success("✅ Venta registrada correctamente. Puedes continuar con otra venta.")
 
         # --- Visualización de ventas ---
         if os.path.exists(ruta_archivo):
