@@ -12,9 +12,20 @@ st.write("Selecciona una categoría, elige el producto vendido y registra la can
 # --- Inicialización de datos ---
 if "categorias" not in st.session_state:
     st.session_state.categorias = {
-        "Bebidas": ["Agua", "Refresco", "Cerveza"],
-        "Snacks": ["Papas", "Galletas", "Chocolate"],
-        "Limpieza": ["Jabón", "Cloro", "Suavitel"]
+        "Suavitel": ["Downy","Amanecer","Momentos Magicos","Ensueño","Primavera","Aventura Floral","Abrazo de Amor","Bebe"],
+        "Detergentes": ["Ariel", "Mas Color", "Mas Negro", "Vel Rosita", "Vanish", "Zote", "Persil", "Ace Oxi", "Roma", "Mas Blancura", "Cloro para Mascota"],
+        "Pino Lechoso": ["Pino Lechoso", "Pino Lechoso Verde"], 
+        "Fabuloso": ["Pepino Melon", "Frutas", "Poet Primavera", "Mar Fresco", "Poet Algodon", "Lavanda", "Maestro Limpio", "Mandarina", "Estefano", "Limon", "Durazno", "Cereza", "Manzana", "Uva", "Menta"],
+        "Jabon de Manos": ["Mora Azul", "Manzana", "Uva", "Cereza", "Durazno", "Pepino Melon", "Frutas", "Coco"],
+        "Jabon de Trastes": ["Salvo", "Axion"],
+        "Automotriz": ["Shampoo Auto", "Almoroll", "Abrillantador", "Cera", "Glicerina"],
+        "Aroma Auto": [ "Hugo Boss", "Adidas", "360", "Estefano", "Lacoste","Tommy", "Vainilla", "Selena", "Ferrary"],
+        "Desengrazantes": [ "Desengrasante de Motor", "Sosa Rosa", "Hipoclorito", "2 en 1"],
+        "Shampoo Cabello": ["Head and Shoulder", "Shampoo para mascota", "Pantene", "Dove"],
+        "Detercom": ["Detercom", "Detercom Aroma"],
+        "Varios": ["Insecticida", "Windex", "Vestiduras", "Quita Gota","Aceite Muebles", "Plancha Facil", "Repelente", "Creolina"],
+        "Escencia pura Auto": ["360 Red", "Vainilla", "Adiddas", "Carolina", "Nautica", "Ferrary"]
+        
     }
 
 # --- Ruta del archivo CSV ---
