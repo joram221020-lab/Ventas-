@@ -39,7 +39,7 @@ def guardar_venta(usuario, categoria, producto, cantidad):
     df_final.to_csv(ruta_archivo, index=False)
     st.success(f"✅ Venta registrada: {cantidad} de '{producto}' ({categoria}) por {usuario}")
 
-# --- Función para agregar nueva categoría ---
+# --- Función para agregar nueva categoría o productos ---
 def agregar_categoria():
     with st.form("nueva_cat"):
         nueva_cat = st.text_input("Nombre de nueva categoría")
@@ -49,8 +49,11 @@ def agregar_categoria():
             productos = [p.strip() for p in nuevo_prod.split(",") if p.strip()]
             if nueva_cat in st.session_state.categorias:
                 st.warning(f"⚠️ La categoría '{nueva_cat}' ya existe.")
-                sobrescribir = st.checkbox("¿Deseas sobrescribir los productos existentes?")
-                if sobrescribir:
+                opcion = st.radio("¿Qué deseas hacer con los productos?", ["Agregar a los existentes", "Sobrescribir los existentes"])
+                if opcion == "Agregar a los existentes":
+                    st.session_state.categorias[nueva_cat].extend(productos)
+                    st.success(f"✅ Se agregaron productos a la categoría '{nueva_cat}'.")
+                elif opcion == "Sobrescribir los existentes":
                     st.session_state.categorias[nueva_cat] = productos
                     st.success(f"✅ Productos actualizados en la categoría '{nueva_cat}'.")
             else:
@@ -139,3 +142,4 @@ elif accion == "Agregar categoría":
 
 elif accion == "Eliminar categoría o producto":
     eliminar_elementos()
+
