@@ -104,7 +104,7 @@ if accion == "Registrar venta":
 
             cols2 = st.columns(4)
             for i, prod in enumerate(productos_filtrados):
-                if cols2[i % 4].button(prod, key=f"btn_{categoria}_{prod}"):
+                if cols2[i % 4].button(prod, key=f"btn_{categoria}_{prod}_{i}"):
                     st.session_state.producto_seleccionado = prod
                     st.session_state.ingresando_cantidad = True
 
