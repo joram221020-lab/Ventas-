@@ -17,7 +17,7 @@ if "categorias" not in st.session_state:
         "Cloro": ["Cloro"], 
         "Detergentes": ["Ariel", "Mas Color", "Mas Negro", "Vel Rosita", "Vanish", "Zote", "Persil", "Ace Oxi", "Roma", "Mas Blancura", "Cloro para Mascota"], 
         "Pino Lechoso": ["Pino Lechoso", "Pino Lechoso Verde"], 
-        "Fabuloso": ["Pepino Melon", "Frutas", "Poet Primavera", "Mar Fresco", "Poet Algodon", "Lavanda", "Maestro Limpio", "Mandarina", "Estefano", "Limon", "Durazno", "Cereza", "Manzana", "Uva", "Menta","Pino Pinol"], 
+        "Fabuloso": ["Pepino Melon", "Frutas", "Poet Primavera", "Mar Fresco", "Poet Algodon", "Lavanda", "Maestro Limpio", "Mandarina","Canela" , "Estefano", "Limon", "Durazno", "Cereza", "Manzana", "Uva", "Menta","Pino Pinol"], 
         "Jabon de Manos": ["Mora Azul", "Manzana", "Uva", "Cereza", "Durazno", "Pepino Melon", "Frutas", "Coco"], 
         "Jabon de Trastes": ["Salvo", "Axion"], 
         "Automotriz": ["Shampoo Auto", "Almoroll", "Abrillantador", "Cera", "Glicerina"], 
